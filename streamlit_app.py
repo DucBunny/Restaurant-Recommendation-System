@@ -87,6 +87,17 @@ st.markdown(
     .card-stat-label { color: #727780; font-size: 0.72rem; }
     .card-stat-value { color: #25282d; font-size: 1.08rem; font-weight: 700; }
     .card-route { color: #727780; font-size: 0.76rem; margin-top: 14px; }
+    .final-score {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid #eceef1;
+        color: #62676f;
+        font-size: 0.8rem;
+    }
+    .final-score strong { color: #d94f4f; font-size: 1rem; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -274,6 +285,7 @@ def render_restaurant_card(row: pd.Series, rank: int, featured: bool = False) ->
     if pd.notna(duration):
         route_text = f"{route_text} · about {duration:.0f} min driving"
     address = row.get("address", "")
+    final_score_percent = float(row.get("final_score", 0)) * 100
     st.markdown(
         f"""
         <div class="restaurant-card">
@@ -288,6 +300,7 @@ def render_restaurant_card(row: pd.Series, rank: int, featured: bool = False) ->
             <div class="card-stat"><div class="card-stat-label">For two</div><div class="card-stat-value">₹{row['cost']:.0f}</div></div>
           </div>
           <div class="card-route">{escape(route_text)}</div>
+          <div class="final-score"><span>Final score</span><strong>{final_score_percent:.1f}%</strong></div>
         </div>
         """,
         unsafe_allow_html=True,
