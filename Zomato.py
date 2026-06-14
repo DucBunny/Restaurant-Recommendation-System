@@ -98,9 +98,12 @@ zomato.columns
 
 
 #Some Transformations
-zomato['cost'] = zomato['cost'].astype(str) #Changing the cost to string
-zomato['cost'] = zomato['cost'].apply(lambda x: x.replace(',','.')) #Using lambda function to replace ',' from cost
-zomato['cost'] = zomato['cost'].astype(float) # Changing the cost to Float
+zomato['cost'] = (
+    zomato['cost']
+    .astype(str)
+    .str.replace(',', '', regex=False)
+    .astype(float)
+) # Changing strings like "1,200" to 1200.0
 zomato.info()
 
 
@@ -387,7 +390,6 @@ plt.xlabel("Number of outlets",size=15)
 # The Dataset can be downloaded here - https://www.kaggle.com/himanshupoddar/zomato-bangalore-restaurants/downloads/zomato-bangalore-restaurants.zip/1
 
 # In[ ]:
-
 
 
 

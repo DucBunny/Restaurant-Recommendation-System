@@ -52,6 +52,103 @@ You can download the dataset here: [Zomato Bangalore Restaurants](https://www.ka
 ✔️ Sentiment Analysis of Reviews\
 ✔️ Recommendation System\
 
+## Improved Recommendation Model
+
+The original recommendation notebook is a content-based baseline:
+
+**Content-based Restaurant Recommendation using TF-IDF and Cosine Similarity**
+
+It answers: "If I like restaurant X, which restaurants have similar reviews?"
+
+This project now also includes an improved hybrid recommender in
+[`hybrid_recommender.py`](./hybrid_recommender.py):
+
+**Hybrid Restaurant Recommendation using Constraint-based Filtering, Content-based Similarity and Weighted Ranking**
+
+Vietnamese name:
+
+**He thong goi y quan an lai ket hop loc theo rang buoc, do tuong dong noi dung va xep hang co trong so**
+
+### What changed
+
+1. **Rule-based filtering**
+   Filters restaurants by budget, maximum distance and cuisine preference.
+
+2. **Haversine distance**
+   Estimates distance between the user's current Bangalore area and each restaurant area using a local coordinate table.
+
+3. **Richer content-based filtering**
+   Uses TF-IDF on combined restaurant features:
+   `cuisines + rest_type + location + reviews_list`.
+
+4. **Bayesian rating**
+   Uses an IMDB-style weighted rating so restaurants with very few votes are not over-rewarded.
+
+5. **Weighted ranking**
+   Ranks filtered candidates with:
+
+   ```text
+   final_score =
+       0.35 * rating_score
+     + 0.25 * distance_score
+     + 0.20 * price_score
+     + 0.10 * popularity_score
+     + 0.10 * content_similarity_score
+   ```
+
+6. **Evaluation helper**
+   Includes rule checking and Precision@K-style evaluation for top recommendations.
+
+### Example usage
+
+Place the Kaggle dataset at `data/zomato.csv`, then run:
+
+```bash
+pip install -r requirements.txt
+python hybrid_recommender.py
+```
+
+### Streamlit UI
+
+Run the interactive demo:
+
+```bash
+streamlit run streamlit_app.py
+```
+
+The UI geocodes the user's address and shortlisted restaurant addresses with
+OpenStreetMap Nominatim, then calculates driving distance and estimated travel
+time with the OSRM Table API. Geocoding results are cached by Streamlit to avoid
+repeating requests.
+
+Or use it from a notebook:
+
+```python
+from hybrid_recommender import (
+    UserPreference,
+    evaluate_rule_checking,
+    load_zomato_data,
+    recommend_restaurants,
+)
+
+restaurants = load_zomato_data("data/zomato.csv")
+
+preference = UserPreference(
+    budget=500,
+    max_distance_km=3,
+    cuisine="Biryani",
+    current_area="Koramangala",
+    top_n=10,
+)
+
+recommendations = recommend_restaurants(restaurants, preference)
+evaluation = evaluate_rule_checking(recommendations, preference)
+
+recommendations
+```
+
+The dataset cost field is `approx_cost(for two people)`. If the user's budget is per person, set `budget_is_per_person=True`; the recommender will compare against `cost / 2` logically by doubling the input budget for two people.
+
 ## License 📄
 This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE) file for details.
 
