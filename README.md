@@ -1,127 +1,156 @@
-# Zomato Restaurant Data Analysis and Recommendation System 🔥
+# Hệ thống gợi ý nhà hàng (Zomato Bangalore)
 
-<p align="center">
+Hệ thống gợi ý nhà hàng lai (hybrid) dựa trên dữ liệu [Zomato Bangalore Restaurants](https://www.kaggle.com/himanshupoddar/zomato-bangalore-restaurants). Người dùng chọn khu vực, món ăn, ngân sách và khoảng cách tối đa; hệ thống lọc theo ràng buộc, tính độ tương đồng nội dung (TF-IDF) và xếp hạng có trọng số. Giao diện Streamlit hỗ trợ geocode địa chỉ (OpenStreetMap Nominatim) và ước lượng quãng đường/thời gian lái xe (OSRM).
 
-  [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-  
-  ![GitHub stars](https://img.shields.io/github/stars/chiragsamal/Zomato)
-  ![GitHub forks](https://img.shields.io/github/forks/chiragsamal/Zomato)
-  [![GitHub contributors](https://img.shields.io/github/contributors/chiragsamal/Zomato.svg)](https://GitHub.com/chiragsamal/Zomato/graphs/contributors/)
-  [![GitHub license](https://img.shields.io/github/license/chiragsamal/Zomato.svg)](https://github.com/chiragsamal/Zomato/blob/master/LICENSE)
-  [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-  [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
-</p>  
+## Tính năng chính
 
-![Zomato](https://github.com/chiragsamal/Zomato/blob/master/Images/zomato.jpg)
+- Lọc theo ngân sách, khoảng cách và loại ẩm thực
+- Khoảng cách Haversine theo khu vực Bangalore
+- Độ tương đồng nội dung (TF-IDF) trên `cuisines`, `rest_type`, `location`, `reviews_list`
+- Điểm xếp hạng Bayesian (giảm thiên lệch khi ít lượt vote)
+- Xếp hạng lai với trọng số mặc định:
 
-## Context
-I was always fascinated by the food culture of Bengaluru. Restaurants from all over the world can be found here in Bengaluru. From United States to Japan, Russia to Antarctica, you get all type of cuisines here. Delivery, Dine-out, Pubs, Bars, Drinks,Buffet, Desserts you name it and Bengaluru has it. Bengaluru is best place for foodies. The number of restaurant are increasing day by day. Currently which stands at approximately 12,000 restaurants. With such an high number of restaurants. This industry hasn't been saturated yet. And new restaurants are opening every day. However it has become difficult for them to compete with already established restaurants. The key issues that continue to pose a challenge to them include high real estate costs, rising food costs, shortage of quality manpower, fragmented supply chain and over-licensing. This Zomato data aims at analysing demography of the location. Most importantly it will help new restaurants in deciding their theme, menus, cuisine, cost etc for a particular location. It also aims at finding similarity between neighborhoods of Bengaluru on the basis of food. The dataset also contains reviews for each of the restaurant which will help in finding overall rating for the place.
-
-## Content 📋
-The basic idea of analyzing the Zomato dataset is to get a fair idea about the factors affecting the establishment of different types of restaurant at different places in Bengaluru, aggregate rating of each restaurant, Bengaluru being one such city has more than 12,000 restaurants with restaurants serving dishes from all over the world. With each day new restaurants opening the industry has’nt been saturated yet and the demand is increasing day by day. Inspite of increasing demand it however has become difficult for new restaurants to compete with established restaurants. Most of them serving the same food. Bengaluru being an IT capital of India. Most of the people here are dependent mainly on the restaurant food as they don’t have time to cook for themselves. With such an overwhelming demand of restaurants it has therefore become important to study the demography of a location. What kind of a food is more popular in a locality. Do the entire locality loves vegetarian food. If yes then is that locality populated by a particular sect of people for eg. Jain, Marwaris, Gujaratis who are mostly vegetarian. These kind of analysis can be done using the data, by studying the factors such as • Location of the restaurant • Approx Price of food • Theme based restaurant or not • Which locality of that city serves that cuisines with maximum number of restaurants • The needs of people who are striving to get the best cuisine of the neighborhood • Is a particular neighborhood famous for its own kind of food.
-
-“Just so that you have a good meal the next time you step out”
-
-The data is accurate to that available on the zomato website until 15 March 2019. The data was scraped from Zomato in two phase. After going through the structure of the website I found that for each neighborhood there are 6-7 category of restaurants viz. Buffet, Cafes, Delivery, Desserts, Dine-out, Drinks & nightlife, Pubs and bars.
-
-## Methodology 🛠️
-### Phase I,
-
-In Phase I of extraction only the URL, name and address of the restaurant were extracted which were visible on the front page. The URl's for each of the restaurants on the zomato were recorded in the csv file so that later the data can be extracted individually for each restaurant. This made the extraction process easier and reduced the extra load on my machine. The data for each neighborhood and each category can be found here
-
-### Phase II,
-
-In Phase II the recorded data for each restaurant and each category was read and data for each restaurant was scraped individually. 15 variables were scraped in this phase. For each of the neighborhood and for each category their online_order, book_table, rate, votes, phone, location, rest_type, dish_liked, cuisines, approx_cost(for two people), reviews_list, menu_item was extracted. See section 5 for more details about the variables.
-
-### Phase III,
-In Phase III, Sentiment Analysis of Reviews of the dataset to identify the feelings of the users towards Restaurants. Sentiment analysis is the computational task of automatically determining what feelings a writer is expressing in text. Sentiment is often framed as a binary distinction (positive vs. negative), but it can also be a more fine-grained, like identifying the specific emotion an author is expressing (like fear, joy or anger).
-
-### Phase IV,
-The rapid growth of data collection has led to a new era of information. Data is being used to create more efficient systems and this is where Recommendation Systems come into play. Recommendation Systems are a type of information filtering systems as they improve the quality of search results and provides items that are more relevant to the search item or are realted to the search history of the user. They are active information filtering systems which personalize the information coming to a user based on his interests, relevance of the information etc. Recommender systems are used widely for recommending movies, articles, restaurants, places to visit, items to buy etc. Here I will be using Content Based Filtering
-Content-Based Filtering: This method uses only information about the description and attributes of the items users has previously consumed to model user's preferences. In other words, these algorithms try to recommend items that are similar to those that a user liked in the past (or is examining in the present). In particular, various candidate items are compared with items previously rated by the user and the best-matching items are recommended.
-
-## Inspiration
-I was always astonished by how each of the restaurants are able to keep up the pace inspite of that cutting edge competition. And what factors should be kept in mind if someone wants to open new restaurant. Does the demography of an area matters? Does location of a particular type of restaurant also depends on the people living in that area? Does the theme of the restaurant matters? Is a food chain category restaurant likely to have more customers than its counter part? Are any neighborhood similar ? If two neighborhood are similar does that mean these are related or particular group of people live in the neighborhood or these are the places to it? What kind of a food is more popular in a locality. Do the entire locality loves vegetarian food. If yes then is that locality populated by a particular sect of people for eg. Jain, Marwaris, Gujaratis who are mostly vegetarian. There are infacts dozens of question in my mind. lets try to find out the answer with this dataset.
-
-You can download the dataset here: [Zomato Bangalore Restaurants](https://www.kaggle.com/himanshupoddar/zomato-bangalore-restaurants/download)
-
-## Sections 📚
-✔️ Exploratory Data Analysis\
-✔️ Visualization \
-✔️ Rate Prediction\
-✔️ Sentiment Analysis of Reviews\
-✔️ Recommendation System\
-
-## Improved Recommendation Model
-
-The original recommendation notebook is a content-based baseline:
-
-**Content-based Restaurant Recommendation using TF-IDF and Cosine Similarity**
-
-It answers: "If I like restaurant X, which restaurants have similar reviews?"
-
-This project now also includes an improved hybrid recommender in
-[`hybrid_recommender.py`](./hybrid_recommender.py):
-
-**Hybrid Restaurant Recommendation using Constraint-based Filtering, Content-based Similarity and Weighted Ranking**
-
-Vietnamese name:
-
-**He thong goi y quan an lai ket hop loc theo rang buoc, do tuong dong noi dung va xep hang co trong so**
-
-### What changed
-
-1. **Rule-based filtering**
-   Filters restaurants by budget, maximum distance and cuisine preference.
-
-2. **Haversine distance**
-   Estimates distance between the user's current Bangalore area and each restaurant area using a local coordinate table.
-
-3. **Richer content-based filtering**
-   Uses TF-IDF on combined restaurant features:
-   `cuisines + rest_type + location + reviews_list`.
-
-4. **Bayesian rating**
-   Uses an IMDB-style weighted rating so restaurants with very few votes are not over-rewarded.
-
-5. **Weighted ranking**
-   Ranks filtered candidates with:
-
-   ```text
-   final_score =
-       0.35 * rating_score
-     + 0.25 * distance_score
-     + 0.20 * price_score
-     + 0.10 * popularity_score
-     + 0.10 * content_similarity_score
-   ```
-
-6. **Evaluation helper**
-   Includes rule checking and Precision@K-style evaluation for top recommendations.
-
-### Example usage
-
-Place the Kaggle dataset at `data/zomato.csv`, then run:
-
-```bash
-pip install -r requirements.txt
-python hybrid_recommender.py
+```text
+final_score =
+    0.35 * rating_score
+  + 0.25 * distance_score
+  + 0.20 * price_score
+  + 0.10 * popularity_score
+  + 0.10 * content_similarity_score
 ```
 
-### Streamlit UI
+- Giao diện web Streamlit: tìm nhà hàng, xem bản đồ và khoảng cách đường bộ
 
-Run the interactive demo:
+## Cấu trúc dự án
+
+| File / thư mục                                     | Mô tả                                           |
+| -------------------------------------------------- | ----------------------------------------------- |
+| `streamlit_app.py`                                 | Giao diện web chính                             |
+| `hybrid_recommender.py`                            | Mô hình gợi ý lai                               |
+| `map_services.py`                                  | Geocode (Nominatim) và khoảng cách đường (OSRM) |
+| `requirements.txt`                                 | Thư viện Python cần thiết                       |
+| `data/zomato.csv`                                  | Dataset (tự tải, không có sẵn trong repo)       |
+| `Zomato.ipynb`, `ZomatoRecommendationSystem.ipynb` | Notebook phân tích / baseline (tùy chọn)        |
+
+### File được dùng khi chạy hệ thống
+
+```text
+streamlit_app.py
+  ├── hybrid_recommender.py
+  ├── map_services.py
+  └── data/zomato.csv
+
+python hybrid_recommender.py
+  └── data/zomato.csv
+```
+
+## Thư viện (`requirements.txt`)
+
+**Bắt buộc** (để chạy app Streamlit / CLI):
+
+| Thư viện       | Dùng cho                    |
+| -------------- | --------------------------- |
+| `pandas`       | Đọc và xử lý dataset        |
+| `numpy`        | Tính khoảng cách, điểm số   |
+| `scikit-learn` | TF-IDF và cosine similarity |
+| `streamlit`    | Giao diện web               |
+| `requests`     | Gọi Nominatim / OSRM        |
+| `pydeck`       | Bản đồ trong Streamlit      |
+
+**Tùy chọn** (chỉ cần nếu mở notebook):
+
+| Thư viện     | Dùng cho                          |
+| ------------ | --------------------------------- |
+| `matplotlib` | Vẽ biểu đồ EDA                    |
+| `seaborn`    | Vẽ biểu đồ EDA                    |
+| `nltk`       | Xử lý stopwords trong notebook cũ |
+
+## Yêu cầu
+
+- Python 3.10+ (khuyến nghị)
+- Kết nối internet (geocode và OSRM khi dùng giao diện Streamlit)
+- Dataset Kaggle `zomato.csv`
+
+## Cách clone và chạy
+
+### 1. Clone repository
+
+Nếu bạn có URL GitHub của repo:
+
+```bash
+git clone <URL-repo>
+cd Restaurant-Recommendation-System-main
+```
+
+Nếu đã tải ZIP, giải nén rồi mở thư mục dự án trong terminal:
+
+```bash
+cd Restaurant-Recommendation-System-main
+```
+
+### 2. Tạo môi trường ảo và cài thư viện
+
+**Windows (PowerShell):**
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+**macOS / Linux:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. Tải và đặt dataset
+
+1. Tải dataset từ Kaggle: [Zomato Bangalore Restaurants](https://www.kaggle.com/himanshupoddar/zomato-bangalore-restaurants/download)
+2. Tạo thư mục `data` trong gốc dự án
+3. Đặt file CSV vào đúng đường dẫn:
+
+```text
+data/zomato.csv
+```
+
+Ví dụ trên Windows:
+
+```powershell
+mkdir data
+# Sao chép file zomato.csv đã tải vào thư mục data\
+```
+
+### 4. Chạy giao diện Streamlit (khuyến nghị)
 
 ```bash
 streamlit run streamlit_app.py
 ```
 
-The UI geocodes the user's address and shortlisted restaurant addresses with
-OpenStreetMap Nominatim, then calculates driving distance and estimated travel
-time with the OSRM Table API. Geocoding results are cached by Streamlit to avoid
-repeating requests.
+Mở trình duyệt tại địa chỉ Streamlit hiển thị (thường là `http://localhost:8501`).
 
-Or use it from a notebook:
+**Cách dùng nhanh:**
+
+1. Chọn **Area** (khu vực hiện tại)
+2. Nhập **Your address** (địa chỉ chi tiết hơn, tùy chọn)
+3. Chọn một hoặc nhiều **Cuisines**
+4. Đặt ngân sách (INR) — bật **Budget per person** nếu ngân sách là theo người
+5. Đặt khoảng cách lái xe tối đa (km)
+6. Bấm **Find restaurants**
+
+Trang chủ cũng hiện các nhà hàng phổ biến trong khu vực đã chọn.
+
+### 5. Chạy mô hình từ dòng lệnh (không UI)
+
+```bash
+python hybrid_recommender.py
+```
+
+Script dùng cấu hình mẫu: ngân sách 500 INR (cho 2 người), bán kính 3 km, món Biryani, khu vực Koramangala, top 10 kết quả.
+
+### 6. Dùng trong Python / notebook
 
 ```python
 from hybrid_recommender import (
@@ -147,14 +176,10 @@ evaluation = evaluate_rule_checking(recommendations, preference)
 recommendations
 ```
 
-The dataset cost field is `approx_cost(for two people)`. If the user's budget is per person, set `budget_is_per_person=True`; the recommender will compare against `cost / 2` logically by doubling the input budget for two people.
+Trường chi phí trong dataset là `approx_cost(for two people)`. Nếu ngân sách của bạn là **theo người**, đặt `budget_is_per_person=True`.
 
-## License 📄
-This project is licensed under the MIT License - see the [LICENSE.md](./LICENSE) file for details.
+## Lưu ý
 
-## Contributing 💡
-If you can help us with these. Please don't hesitate to open an [pull request](https://github.com/chiragsamal/Zomato/pulls) or [issue](https://github.com/chiragsamal/issue/issues).
-
-### Refrences 👏
- - [Finding the best restaurants in Bangalore](https://www.kaggle.com/parthsharma5795/finding-the-best-restaurants-in-bangalore)
- - [Zomato Bangalore Restaurant Rating Prediction](https://www.kaggle.com/bablukd/zomato-bangalore-restaurant-rating-prediction)
+- Thư mục `data/` nằm trong `.gitignore` — mỗi máy cần tự tải dataset.
+- Geocode/OSRM dùng API công cộng; lần tìm đầu có thể chậm hơn vì cần geocode nhiều địa chỉ (kết quả được cache bởi Streamlit).
+- Notebook chỉ để tham khảo, không bắt buộc để chạy ứng dụng Streamlit.
